@@ -1,8 +1,7 @@
 // plots
 function Plots(id){
-  d3.json("../../data/samples.json").then(function(data) {
+  d3.json("samples.json").then(function(data) {
     // Bar
-
     let values = data.samples[0].sample_values.slice(0, 10).reverse();
     let labels = (data.samples[0].otu_ids).slice(0, 10).reverse().map(label => `OTU ${label}`);
     let barText = (data.samples[0].otu_labels).slice(0, 10).reverse();
@@ -24,31 +23,43 @@ function Plots(id){
     Plotly.newPlot("bar", barTrace);
 
     // Bubbles
-
     let trace2 = {
       x: data.samples[0].otu_ids,
       y: data.samples[0].sample_values,
-      mode: "markers",
-      text: data.samples[0].otu_ids,
       marker: {
           size: data.samples[0].sample_values,
           color: data.samples[0].otu_ids
-      }
+      },
+      text: data.samples[0].otu_labels,
+      mode: "markers"
       };
     
-    let layout_b = {
+    let bubbleLayout = {
       xaxis:{title: "OTU ID"},
-      height: 600,
-      width: 1200
+      height: 550,
+      width: 1100
       };
     
     let bubbleTrace = [trace2];
 
-    Plotly.newPlot("bubble", bubbleTrace, layout_b); 
-
-
+    Plotly.newPlot("bubble", bubbleTrace, bubbleLayout);
   
     });
 }
 
-Plots(); 
+Plots();
+
+// Demographic Info.
+function demographics(){
+  d3.json("samples.json").then((data)=> {
+
+    let panel = d3.select("#sample-metadata");
+    panel.html("");
+
+    Object.entries(data.metadata[0]).forEach((key)=>{
+      panel.append("p").text(key[0] + ":" + key[1]);
+  });
+  });
+}
+
+demographics();

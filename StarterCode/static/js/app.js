@@ -1,7 +1,7 @@
 // plots
 function plots(id){
   d3.json("samples.json").then(function(data) {
-    // Bar
+    // Bar chart plot
     // filtering by id
     let dataSample = data.samples.filter(s => s.id.toString() === id)[0];
     
@@ -21,7 +21,7 @@ function plots(id){
   
     Plotly.newPlot("bar", barTrace);
 
-    // Bubbles
+    // Bubble plot
     let trace2 = {
       x: dataSample.otu_ids,
       y: dataSample.sample_values,
@@ -42,6 +42,40 @@ function plots(id){
     let bubbleTrace = [trace2];
 
     Plotly.newPlot("bubble", bubbleTrace, bubbleLayout);
+
+    // Gauge plot
+
+    let dataMeta = data.metadata.filter(f => f.id.toString() === id)[0];
+    let wfreq = dataMeta.wfreq;
+
+    let gaugeTrace = [
+      {
+      domain: { x: [0, 1], y: [0, 1] },
+      value: wfreq,
+      title: {text: "Belly Button Washing Frequency"},
+      type: "indicator",      
+      mode: "gauge+number",
+      gauge: { axis: { range: [null, 9] },
+               steps: [
+                {range: [0, 1], color: "#f8f3ec"},
+                {range: [1, 2], color: "#f4f1e4"},
+                {range: [2, 3], color: "#e9e6c9"},
+                {range: [3, 4], color: "#e5e8b0"},
+                {range: [4, 5], color: "#d5e599"},
+                {range: [5, 6], color: "#b7cd8f"},
+                {range: [6, 7], color: "#8ac086"},
+                {range: [7, 8], color: "#89bc8d"},
+                {range: [8, 9], color: "#84b589"}
+              ]}
+          
+      }
+    ];
+    let gaugeLayout = { 
+        width: 600, 
+        height: 500, 
+        margin: { t: 0, b: 0} 
+      };
+    Plotly.newPlot("gauge", gaugeTrace, gaugeLayout);
   
     });
 }

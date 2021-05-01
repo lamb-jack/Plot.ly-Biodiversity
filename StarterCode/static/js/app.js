@@ -1,14 +1,13 @@
 // plots
-function Plots(id){
+function plots(id){
   d3.json("samples.json").then(function(data) {
     // Bar
-    let values = data.samples[0].sample_values.slice(0, 10).reverse();
-    let labels = (data.samples[0].otu_ids).slice(0, 10).reverse().map(label => `OTU ${label}`);
-    let barText = (data.samples[0].otu_labels).slice(0, 10).reverse();
-      
-    console.log(values);
-    console.log(labels);
-    console.log(barText);
+    // filtering by id
+    let dataSample = data.samples.filter(s => s.id.toString() === id)[0];
+    
+    let values = dataSample.sample_values.slice(0, 10).reverse();
+    let labels = dataSample.otu_ids.slice(0, 10).reverse().map(label => `OTU ${label}`);
+    let barText = dataSample.otu_labels.slice(0, 10).reverse();
   
     let trace = {
       x: values,
@@ -24,13 +23,13 @@ function Plots(id){
 
     // Bubbles
     let trace2 = {
-      x: data.samples[0].otu_ids,
-      y: data.samples[0].sample_values,
+      x: dataSample.otu_ids,
+      y: dataSample.sample_values,
       marker: {
-          size: data.samples[0].sample_values,
-          color: data.samples[0].otu_ids
+          size: dataSample.sample_values,
+          color: dataSample.otu_ids
       },
-      text: data.samples[0].otu_labels,
+      text: dataSample.otu_labels,
       mode: "markers"
       };
     
@@ -47,19 +46,40 @@ function Plots(id){
     });
 }
 
-Plots();
-
 // Demographic Info.
-function demographics(){
-  d3.json("samples.json").then((data)=> {
-
+function demographics(id){
+  d3.json("samples.json").then((data)=> {    
+    // filtering by id
+    let dataMeta = data.metadata.filter(s => s.id.toString() === id)[0];
+    // select panel body
     let panel = d3.select("#sample-metadata");
+    // empty panel
     panel.html("");
-
-    Object.entries(data.metadata[0]).forEach((key)=>{
-      panel.append("p").text(key[0] + ":" + key[1]);
+    // populate panel
+    Object.entries(dataMeta).forEach(([key, value])=>{
+      panel.append("p").text(`${key}: ${value}`);
   });
   });
 }
 
-demographics();
+// Init with first sample & populate Dropdown 
+function init() {
+  d3.json("samples.json").then((data)=> {
+    data.names.forEach((name) => {
+        d3.select("#selDataset")
+        .append("option")
+        .text(name)
+        .property("value");
+    });
+      // starting with first sample
+    plots(data.names[0]);
+    demographics(data.names[0]);
+  });
+};
+init();
+
+// optionChanged function
+function optionChanged(id){
+  plots(id);
+  demographics(id);
+};

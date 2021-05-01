@@ -1,4 +1,5 @@
-# Deployed Page https://lamb-jack.github.io/Plot.ly-Biodiversity/
+# Deployed Page: 
+# https://lamb-jack.github.io/Plot.ly-Biodiversity/
 
 # Plot.ly Homework - Belly Button Biodiversity
 
